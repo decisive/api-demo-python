@@ -48,9 +48,12 @@ ad = {'url':'http://google.com',
       'blacklist':{'country':['Canada','France'],'site': ['tmz.com', 'dogecoin.com']},
       'targeting':{'country':['Mexico']}
       }
-new_creative_urls = ['https://www.google.com.au/logos/2014/halloween14/5.gif']
 sys.exit('TODO: remove once finished testing')
 ad_id = post(ad, 'ads')['ad_id']
 print ad_id
+
+print
+print 'Adding creatives...'
+new_creative_urls = ['https://www.google.com.au/logos/2014/halloween14/5.gif']
 print post(new_creative_urls, 'ads',ad_id,'creatives')
 print get('ads',ad_id)
