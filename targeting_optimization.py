@@ -27,14 +27,14 @@ def get(*paths, **get_args):
     response.raise_for_status()
     return response.json()
 
-def get_report(ad, type_, attribute, start_datehour, end_datehour, **kwargs):
+def get_report(ad, type_, attribute, start_datehour, end_datehour, **options):
     return get('ads', ad['ad_id'], 'reports',
                type_, attribute,
                start_datehour.date().isoformat(),
                start_datehour.hour,
                end_datehour.date().isoformat(),
                end_datehour.hour,
-               **kwargs)
+               **options)
 
 def put(updated_ad):
     uri = to_uri('ads',updated_ad['ad_id'])
@@ -49,7 +49,7 @@ ads = get('ads', offset=1, limit=5, approved='true')
 print [a['ad_id'] for a in ads]
 ad = ads[0]
 print 'selected', ad['ad_id']
-print ad['targeting']
+pprint.pprint(ad['targeting'])
 
 
 print
