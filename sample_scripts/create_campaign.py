@@ -48,9 +48,9 @@ ad = {'url':'http://google.com',
       'blacklist':{'country':['Canada','France'],'site': ['tmz.com', 'dogecoin.com']},
       'targeting':{'country':['Mexico']}
       }
-sys.exit('TODO: remove once finished testing')
 ad_id = post(ad, 'ads')['ad_id']
 print ad_id
+
 
 print
 print 'Adding creatives...'

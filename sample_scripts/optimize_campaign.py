@@ -81,7 +81,7 @@ for attribute in untargeted_attributes:
         ad['targeting'][attribute] = [r[attribute] for r in report if select_segment(r)]
 print 'Optimized targeting', ad['targeting']
 
-sys.exit('TODO: remove once finished testing')
+
 print
 print 'Updating ad...'
-print 'Success?', put(ad)
+print put(ad)
