@@ -12,6 +12,7 @@ if not API_KEY:
 
 print
 print 'Creating session to always add API key...'
+# NOTE: you can also use decisive.DecisiveApiClient
 session = requests.Session()
 session.auth = (API_KEY,'')
 
