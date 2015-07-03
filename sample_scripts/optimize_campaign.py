@@ -54,33 +54,48 @@ pprint.pprint(ad['targeting'])
 
 
 print
-print 'Selecting untargeted attributes...'
+print 'Identify untargeted attributes...'
 IGNORE_ATTRIBUTES = set(['city','creative_id','region','day_part','device_groups','os_version']) # NOTE: ignore attributes that are too specific
 targeted_attributes = set(ad['targeting'].keys())
 print targeted_attributes
 available_attributes = set(get('audience','attributes')) - IGNORE_ATTRIBUTES
 print available_attributes
 untargeted_attributes = set(available_attributes) - set(targeted_attributes)
-print 'selected', untargeted_attributes
+print untargeted_attributes
 
 
 print
-print 'Identifying segments with high win potential...'
+print 'Identifying segments with high spend potential...'
 end_datehour = datetime.datetime.now()
 start_datehour = end_datehour - datetime.timedelta(days=7)
-print 'Optimize on performances from', start_datehour, 'to', end_datehour
 select_segment = lambda r: 'unknown' not in r[attribute].lower() and r['bids'] > 10
 for attribute in untargeted_attributes:
     report = get_report(ad, 'aggregate', attribute, 
-                        start_datehour, 
-                        end_datehour,
+                        start_datehour, end_datehour,
                         select='bids',
-                        sort='wnr', # NOTE: win rate
+                        sort='spend',
                         limit=5)
     pprint.pprint(report); print
     if report:
         ad['targeting'][attribute] = [r[attribute] for r in report if select_segment(r)]
-print 'Optimized targeting', ad['targeting']
+print 'Optimized targeting'
+pprint.pprint(ad['targeting'])
+
+
+print
+print 'Identifying segments with low conversion rate...'
+for attribute in targeted_attributes:
+    report = get_report(ad, 'aggregate', attribute, 
+                        start_datehour, end_datehour,
+                        select='bids',
+                        sort='cvr', # NOTE: converation rate
+                        limit=5,
+                        ascending='true')
+    pprint.pprint(report); print
+    if report:
+        ad['blacklist'][attribute] = [r[attribute] for r in report if select_segment(r)]
+print 'Optimized blacklist'
+pprint.pprint(ad['blacklist'])
 
 
 print
