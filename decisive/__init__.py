@@ -16,8 +16,15 @@ class DecisiveApiClient(object):
 
     def to_uri(self, *paths, **get_args):
         path = '/'.join(p.strip('/') for p in map(unicode, paths))
-        args = '&'.join('{}={}'.format(*i) for i in get_args.items())
+        args = '&'.join('{}={}'.format(*i) for i in self.flatten_getargs(get_args))
         return '{}/{}?{}'.format(self.host, path, args)
+    
+    def flatten_getargs(self, get_args):
+        # NOTE: support multiple value arg values, e.g. select=bids&select=spend
+        for key,value in get_args.items():
+            value_list = value if hasattr(v, '__iter__') else [v]
+            for list_value in value_list:
+                yield key, value
 
     def get(self, *paths, **get_args):
         uri = self.to_uri(*paths, **get_args)
@@ -29,12 +36,12 @@ class DecisiveApiClient(object):
         response = self.session.put(uri, data=json.dumps(updated_ad))
         return self.examine_response(response, False)
 
-    def post(data, *paths):
+    def post(self, data, *paths):
         uri = self.to_uri(*paths)
         response = self.session.post(uri, data=json.dumps(data))
         return self.examine_response(response)
     
-    def delete(*paths):
+    def delete(self, *paths):
         uri = self.to_uri(*paths)
         response = self.session.delete(uri)
         return self.examine_response(response, False)
@@ -48,11 +55,11 @@ class DecisiveApiClient(object):
                         end_datehour.hour,
                         **options)
     
-    def examine_response(response, return_json=True):
+    def examine_response(self, response, return_json=True):
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
-            body = (response.json() or {})
+            body = response.json() or {}
             message = body.get('reason') or error.messsage
             logging.warning('HTTPError', response.status_code, message)
             logging.info('Did you know?', body.get('did_you_know'))
